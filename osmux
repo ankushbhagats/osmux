@@ -1,0 +1,100 @@
+clear
+sleep 0.5
+a='\e[0m'
+b='\e[0;1;2m'
+c0='\e[0;1m'
+O='\e[0;1;38;2;225;0;0m'
+c1='\e[0;1;38;2;255;80;0m'
+c2='\e[0;1;38;2;0;100;255m'
+c3='\e[0;1;38;2;255;0;150m'
+c4='\e[0;1;38;2;0;170;80m'
+c5='\e[0;1;38;2;0;180;180m'
+c6='\e[0;1;38;2;0;200;130m'
+c7='\e[0;1;38;2;0;100;255m'
+c8='\e[0;1;38;2;0;200;50m'
+c9='\e[0;1;38;2;255;255;0m'
+cO='\e[0;1;38;2;255;230;250m'
+banner() { var="`echo ${RANDOM:0:1}`"
+if [ $var = 1 ]; then
+echo -e "${c0}┌────────────────────────┐${c0}"
+echo -e "${c0}│${c8}   ┏━┓┏━┓   ┏┳┓╻ ╻╻ ╻${c0}   │"
+echo -e "${c0}│${c2}   ┃ ┃┗━┓${c1}╺━╸${c2}┃┃┃┃ ┃┏╋┛${c0}   │"
+echo -e "${c0}│${c8}   ┗━┛┗━┛   ╹ ╹┗━┛╹ ╹${c0}   │"
+echo -e "${c0}└────────────────────────┘${c0}"
+elif [ $var = 2 ]; then
+echo -e "${c0}┌────────────────────────┐${c0}"
+echo -e "${c0}│${c1}   ┏━┓┏━┓   ┏┳┓╻ ╻╻ ╻${c0}   │"
+echo -e "${c0}│${c9}   ┃ ┃┗━┓${c5}╺━╸${c9}┃┃┃┃ ┃┏╋┛${c0}   │"
+echo -e "${c0}│${c3}   ┗━┛┗━┛   ╹ ╹┗━┛╹ ╹${c0}   │"
+echo -e "${c0}└────────────────────────┘${c0}"
+else
+echo -e "${c0}┌────────────────────────┐${c0}"
+echo -e "${c0}│${c1}   ┏━┓┏━┓   ┏┳┓╻ ╻╻ ╻${c0}   │"
+echo -e "${c0}│${c7}   ┃ ┃┗━┓${c5}╺━╸${c7}┃┃┃┃ ┃┏╋┛${c0}   │"
+echo -e "${c0}│${c3}   ┗━┛┗━┛   ╹ ╹┗━┛╹ ╹${c0}   │"
+echo -e "${c0}└────────────────────────┘${c0}" ;fi ;}
+banner
+sleep 0
+echo""
+echo -en "\033[?12l\033[?25h"
+printf "${c0}[1]${c1} Install Ubuntu\n${a}"
+printf "${c0}[2]${c2} Install Kali Linux\n${a}"
+printf "${c0}[3]${c3} Install Debian\n${a}"
+printf "${c0}[4]${c4} Install Alpine\n${a}"
+printf "${c0}[5]${c5} Install Arch\n${a}"
+printf "${c0}[6]${c6} Install Void\n${a}"
+printf "${c0}[7]${c7} Install Fedora\n${a}"
+printf "${c0}[8]${c8} Install Manjaro\e[1m\n${a}"
+printf "${c0}[9]${c9} Update Tool\n${a}\n"
+printf "${c0}[*]${cO} Choose an option: ${a}"
+read input
+if [[ $input = "1" ]] || [[ $input = "01" ]]
+then
+clear
+cd $HOME && cd OSMUX && cd .OS && bash Ubuntu
+elif [[ $input = "2" ]] || [[ $input = "02" ]]
+then
+clear
+cd $HOME && cd OSMUX && cd .OS && bash KaliLinux
+elif [[ $input = "3" ]] || [[ $input = "03" ]]
+then
+clear
+cd $HOME && cd OSMUX && cd .OS && bash Debian
+elif [[ $input = "4" ]] || [[ $input = "04" ]]
+then
+clear
+cd $HOME && cd OSMUX && cd .OS && bash Alpine
+elif [[ $input = "5" ]] || [[ $input = "05" ]]
+then
+clear
+cd $HOME && cd OSMUX && cd .OS && bash Arch
+elif [[ $input = "6" ]] || [[ $input = "06" ]]
+then
+clear
+cd $HOME && cd OSMUX && cd .OS && bash Void
+elif [[ $input = "7" ]] || [[ $input = "07" ]]
+then
+clear
+cd $HOME && cd OSMUX && cd .OS && bash Fedora
+elif [[ $input = "8" ]] || [[ $input = "08" ]]
+then echo
+clear
+cd $HOME && cd OSMUX && cd .OS && bash Manjaro
+elif [[ $input = "9" ]] || [[ $input = "09" ]]
+then
+clear
+echo -e "${c9}[⬇] OSMUX Updating..."
+echo
+connection="$(ping -c 1 -q www.google.com >&/dev/null; echo $?)"
+if [[ "$connection" != 0 ]]
+then
+echo
+echo -e "\033[1;91m[\033[1;92m-\033[1;91m] No Internet\033[1;92m connection!"
+echo
+exit
+fi
+cd .OS
+bash .update
+else
+echo -e "${c0}[-] ${O}Canceled${a}\n"
+fi
