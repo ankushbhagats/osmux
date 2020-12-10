@@ -1,100 +1,520 @@
+#!/data/data/com.termux/files/usr/bin/bash
+
+col1="\033[0m" col2='\e[0;1;38;2;0;255;118m'
+
 clear
-sleep 0.5
-a='\e[0m'
-b='\e[0;1;2m'
-c0='\e[0;1m'
-O='\e[0;1;38;2;225;0;0m'
-c1='\e[0;1;38;2;255;80;0m'
-c2='\e[0;1;38;2;0;100;255m'
-c3='\e[0;1;38;2;255;0;150m'
-c4='\e[0;1;38;2;0;170;80m'
-c5='\e[0;1;38;2;0;180;180m'
-c6='\e[0;1;38;2;0;200;130m'
-c7='\e[0;1;38;2;0;100;255m'
-c8='\e[0;1;38;2;0;200;50m'
-c9='\e[0;1;38;2;255;255;0m'
-cO='\e[0;1;38;2;255;230;250m'
-banner() { var="`echo ${RANDOM:0:1}`"
-if [ $var = 1 ]; then
-echo -e "${c0}┌────────────────────────┐${c0}"
-echo -e "${c0}│${c8}   ┏━┓┏━┓   ┏┳┓╻ ╻╻ ╻${c0}   │"
-echo -e "${c0}│${c2}   ┃ ┃┗━┓${c1}╺━╸${c2}┃┃┃┃ ┃┏╋┛${c0}   │"
-echo -e "${c0}│${c8}   ┗━┛┗━┛   ╹ ╹┗━┛╹ ╹${c0}   │"
-echo -e "${c0}└────────────────────────┘${c0}"
-elif [ $var = 2 ]; then
-echo -e "${c0}┌────────────────────────┐${c0}"
-echo -e "${c0}│${c1}   ┏━┓┏━┓   ┏┳┓╻ ╻╻ ╻${c0}   │"
-echo -e "${c0}│${c9}   ┃ ┃┗━┓${c5}╺━╸${c9}┃┃┃┃ ┃┏╋┛${c0}   │"
-echo -e "${c0}│${c3}   ┗━┛┗━┛   ╹ ╹┗━┛╹ ╹${c0}   │"
-echo -e "${c0}└────────────────────────┘${c0}"
-else
-echo -e "${c0}┌────────────────────────┐${c0}"
-echo -e "${c0}│${c1}   ┏━┓┏━┓   ┏┳┓╻ ╻╻ ╻${c0}   │"
-echo -e "${c0}│${c7}   ┃ ┃┗━┓${c5}╺━╸${c7}┃┃┃┃ ┃┏╋┛${c0}   │"
-echo -e "${c0}│${c3}   ┗━┛┗━┛   ╹ ╹┗━┛╹ ╹${c0}   │"
-echo -e "${c0}└────────────────────────┘${c0}" ;fi ;}
-banner
-sleep 0
-echo""
-echo -en "\033[?12l\033[?25h"
-printf "${c0}[1]${c1} Install Ubuntu\n${a}"
-printf "${c0}[2]${c2} Install Kali Linux\n${a}"
-printf "${c0}[3]${c3} Install Debian\n${a}"
-printf "${c0}[4]${c4} Install Alpine\n${a}"
-printf "${c0}[5]${c5} Install Arch\n${a}"
-printf "${c0}[6]${c6} Install Void\n${a}"
-printf "${c0}[7]${c7} Install Fedora\n${a}"
-printf "${c0}[8]${c8} Install Manjaro\e[1m\n${a}"
-printf "${c0}[9]${c9} Update Tool\n${a}\n"
-printf "${c0}[*]${cO} Choose an option: ${a}"
-read input
-if [[ $input = "1" ]] || [[ $input = "01" ]]
-then
-clear
-cd $HOME && cd OSMUX && cd .OS && bash Ubuntu
-elif [[ $input = "2" ]] || [[ $input = "02" ]]
-then
-clear
-cd $HOME && cd OSMUX && cd .OS && bash KaliLinux
-elif [[ $input = "3" ]] || [[ $input = "03" ]]
-then
-clear
-cd $HOME && cd OSMUX && cd .OS && bash Debian
-elif [[ $input = "4" ]] || [[ $input = "04" ]]
-then
-clear
-cd $HOME && cd OSMUX && cd .OS && bash Alpine
-elif [[ $input = "5" ]] || [[ $input = "05" ]]
-then
-clear
-cd $HOME && cd OSMUX && cd .OS && bash Arch
-elif [[ $input = "6" ]] || [[ $input = "06" ]]
-then
-clear
-cd $HOME && cd OSMUX && cd .OS && bash Void
-elif [[ $input = "7" ]] || [[ $input = "07" ]]
-then
-clear
-cd $HOME && cd OSMUX && cd .OS && bash Fedora
-elif [[ $input = "8" ]] || [[ $input = "08" ]]
-then echo
-clear
-cd $HOME && cd OSMUX && cd .OS && bash Manjaro
-elif [[ $input = "9" ]] || [[ $input = "09" ]]
-then
-clear
-echo -e "${c9}[⬇] OSMUX Updating..."
+printf "\n"
+
+function select_option {
+
+    ESC=$( printf "\033")
+    cursor_blink_on()  { printf "$ESC[?25h"; }
+    cursor_blink_off() { printf "$ESC[?25l"; }
+    cursor_to()        { printf "$ESC[$1;${2:-1}H"; }
+    print_option()     { printf " $1 "; }
+    print_selected()   { printf "$ESC[1;7m $1 $ESC[27m"; }
+    get_cursor_row()   { IFS=';' read -sdR -p $'\E[6n' ROW COL; echo ${ROW#*[}; }
+    key_input()        { read -s -n3 key 2>/dev/null >&2
+    if [[ $key = $ESC[A ]]; then echo up;    fi
+    if [[ $key = $ESC[B ]]; then echo down;  fi
+    if [[ $key = $ESC[C ]]; then echo right; fi
+    if [[ $key = $ESC[D ]]; then echo left;  fi
+    if [[ $key = ""     ]]; then echo enter; fi; }
+
+    for opt; do printf "\n"; done
+
+    local lastrow=`get_cursor_row`
+    local startrow=$(($lastrow - $#))
+
+    trap "cursor_blink_on; stty echo; printf '\n'; exit" 2
+    cursor_blink_off
+
+    local selected=0
+    while true; do
+    local idx=0
+    for opt; do
+            cursor_to $(($startrow + $idx))
+            if [ $idx -eq $selected ]; then
+                print_selected "$opt"
+            else
+                print_option "$opt"
+            fi
+            ((idx++))
+        done
+
+        case `key_input` in
+            enter) break;;
+            up)    ((selected--));
+                   if [ $selected -lt 0 ]; then selected=$(($# - 1)); fi;;
+            down)  ((selected++));
+                   if [ $selected -ge $# ]; then selected=0; fi;;
+       esac
+    done
+
+    cursor_to $lastrow
+    printf "\n"
+    cursor_blink_on
+
+    return $selected
+}
+
+echo -e "\e[1m
+${col1} ___   __  _ _  _  _    _
+${col2}/ / \ ( (  | |\/| | | | \ \_/
+${col1}\_\_/ _)_) |_|  | \_\_/ /_/ \\
+${col2}——————————————————————————————${col1}"
+echo "Select one option which ‘Operating System’ want to install,
+using up/down keys and enter to confirm:"
 echo
-connection="$(ping -c 1 -q www.google.com >&/dev/null; echo $?)"
+
+options=("[1] Ubuntu" "[2] Kali  " "[3] Debian" "[4] Alpine" "[5] Arch " "[6] Void " "[7] Fedora" "[8] Manjaro" "[#] Cancel")
+
+select_option "${options[@]}"
+choice=$?
+
+	if [[ "${options[$choice]}" = *"1"* ]];then
+	c2="\e[0m\e[1m"
+	c1="\e[1m\e[38;2;255;80;0m"
+
+echo
+echo -e "$c1                 .-/+oossssoo+/-.
+              :+ssssssssssssssssss+:
+           -+ssssssssssssssssssyyssss+-
+         .ossssssssssssssssss${c2}dMMMNy${c1}sssso.
+        /sssssssssss${c2}hdmmNNmmyNMMMMh${c1}ssssss/
+       +sssssssss${c2}hm${c1}yd${c2}MMMMMMMNddddy${c1}ssssssss+
+      /ssssssss${c2}hNMMM${c1}yh${c2}hyyyyhmNMMMNh${c1}ssssssss/
+     .ssssssss${c2}dMMMNh${c1}ssssssssss${c2}hNMMMd${c1}ssssssss.
+     +ssss${c2}hhhyNMMNy${c1}ssssssssssss${c2}yNMMMy${c1}sssssss+
+     oss${c2}yNMMMNyMMh${c1}ssssssssssssss${c2}hmmmh${c1}ssssssso
+     oss${c2}yNMMMNyMMh${c1}sssssssssssssshmmmh${c1}ssssssso
+     +ssss${c2}hhhyNMMNy${c1}ssssssssssss${c2}yNMMMy${c1}sssssss+
+     .ssssssss${c2}dMMMNh${c1}ssssssssss${c2}hNMMMd${c1}ssssssss.
+      /ssssssss${c2}hNMMM${c1}yh${c2}hyyyyhdNMMMNh${c1}ssssssss/
+       +sssssssss${c2}dm${c1}yd${c2}MMMMMMMMddddy${c1}ssssssss+
+        /sssssssssss${c2}hdmNNNNmyNMMMMh${c1}ssssss/
+         .ossssssssssssssssss${c2}dMMMNy${c1}sssso.
+           -+sssssssssssssssss${c2}yyy${c1}ssss+-
+              :+ssssssssssssssssss+:
+                 .-/+oossssoo+/-."
+
+echo '
+  U)    uu b)                        t)
+  U)    uu b)                      t)tTTT
+  U)    uu b)BBBB  u)   UU n)NNNN    t)   u)   UU
+  U)    uu b)   BB u)   UU n)   NN   t)   u)   UU
+  U)    uu b)   BB u)   UU n)   NN   t)   u)   UU
+   U)uuuu  b)BBBB   u)UUU  n)   NN   t)T   u)UUU'
+echo
+echo
+	echo -n "Are you want to continue installing (Y/N)? "
+read input
+	if [[ $input = "Y" ]] || [[ $input = "y" ]]
+	then connection="$(ping -c 1 -q www.google.com >&/dev/null; echo $?)"
+	if [[ "$connection" != 0 ]]
+then
+	echo -e "\033[1;91m          [\033[1;92m-\033[1;91m] No Internet\033[1;92m connection!"
+	echo
+   exit
+fi
+	sleep 1.5
+	cd $HOME
+	mkdir ubuntu > /dev/null 2>&1
+	cd ubuntu
+	echo
+	echo -e '\033[1m\033[38;2;0;80;255m[^_^] Ubuntu Installing Starting...'
+	sleep 1
+	echo
+	pkg update -y && pkg install wget curl proot tar -y && wget https://raw.githubusercontent.com/AndronixApp/AndronixOrigin/master/Installer/Ubuntu19/ubuntu19-xfce.sh && chmod +x ubuntu19-xfce.sh && bash ubuntu19-xfce.sh
+	else
+	echo -e '\033[0m\033[1mAbort.'
+	echo
+exit
+fi
+
+	elif [[ "${options[$choice]}" = *"2"* ]];then
+echo -e "\e[1m\e[38;2;0;60;255m
+..............
+            ..,;:ccc,.
+          ......''';lxO.
+.....''''..........,:ld;
+           .';;;:::;,,.x,
+      ..'''.            0Xxoc:,.  ...
+  ....                ,ONkc;,;cokOdc',.
+ .                   OMo           ':\e[38;2;255;0;100mdd\e[38;2;0;60;255mo.
+                    dMc               :OO;
+                    0M.                 .:o.
+                    ;Wd
+                     ;XO,
+                       ,d0Odlc;,..
+                           ..',;:cdOOd::,.
+                                    .:d;.':;.
+                                       'd,  .'
+                                         ;l   ..
+                                          .o
+                                            c
+                                            .'
+                                             ."'\e[1;97m
+                88  dP    db    88     88
+                88odP    dPYb   88     88
+                88"Yb   dP__Yb  88  .o 88
+                88  Yb dP""""Yb 88ood8 88'
+echo
+echo
+echo -n "Are you want to continue installing (Y/N)? "
+read input
+if [[ $input = "Y" ]] || [[ $input = "y" ]]
+then connection="$(ping -c 1 -q www.google.com >&/dev/null; echo $?)"
 if [[ "$connection" != 0 ]]
 then
+echo -e "\033[1;91m           [\033[1;92m-\033[1;91m] No Internet\033[1;92m connection!"
 echo
-echo -e "\033[1;91m[\033[1;92m-\033[1;91m] No Internet\033[1;92m connection!"
+   exit
+fi
+sleep 2.0
+cd $HOME
+echo
+echo -e '\033[1m\033[38;2;0;80;255m[^_^] Installing Kali Linux...'
+sleep 2.0
+echo
+apt update && apt install wget -y && wget -O install-nethunter-termux https://offs.ec/2MceZWr && chmod + install-nethunter-termux && bash install-nethunter-termux
+else
+echo -e '\033[0m\033[1mAbort.'
 echo
 exit
 fi
-cd .OS
-bash .update
+
+	elif [[ "${options[$choice]}" = *"3"* ]];then
+echo -e "\e[38;2;255;0;150m
+                   .#############.#
+                #######.       .######/
+              #####                (#####
+          . /##(                     #####
+           ##(            *##*,(*     ###
+          ###           #              ##
+          ##           #               ##
+          ##           #/        *    ##
+          ##           .#/           ##
+          ##(            .##     *##
+           ###                #
+            ###
+             ###
+               ###
+                  ##/
+                     *##
+
+\e[1;97m
+      @@          @@
+      @@          @@        \e[38;2;255;0;150m⧫\e[1;97m
+ *@@@@@@   @@@@  (@@ @@@   @@(  @@@@@&  /@@ @@@@
+@@    @@ @@   *@@(@@   @@@ @@       #@@  @@   &@@
+@@    @@ @@@@@@@@(@@   *@@ @@  .@@@(#@@  @@   (@@
+@@    @@ @@      (@@   @@  @@  @@   @@@  @@   /@@
+ @@@@ @@  &@@@@@*@@@@@@@   @@( @@@@@.@@  @@   @@@\e[1m\e[38;2;255;0;150m"
+echo
+echo
+echo -n "Are you want to continue installing (Y/N)? "
+read input
+if [[ $input = "Y" ]] || [[ $input = "y" ]]
+then connection="$(ping -c 1 -q www.google.com >&/dev/null; echo $?)"
+if [[ "$connection" != 0 ]]
+then
+echo -e "\033[1;91m                [\033[1;92m-\033[1;91m] No Internet\033[1;92m connection!"
+echo
+   exit
+fi
+sleep 1.5
+cd $HOME
+mkdir debian > /dev/null 2>&1
+cd debian
+echo
+echo -e '\033[1m\033[38;2;0;80;255m[^_^] Debian Installing Starting...'
+sleep 1
+echo
+pkg update -y && pkg install wget curl proot tar -y && wget https://raw.githubusercontent.com/AndronixApp/AndronixOrigin/master/Installer/Debian/debian-xfce.sh && chmod +x debian-xfce.sh &&  bash debian-xfce.sh
 else
-echo -e "${c0}[-] ${O}Canceled${a}\n"
+echo -e '\033[0m\033[1mAbort.'
+echo
+exit
+fi
+
+	elif [[ "${options[$choice]}" = *"4"* ]];then
+c1='\e[0;1;38;2;0;170;80m'
+c2='\e[0;1;96m'
+
+echo -e "\n\n${c1}       .hddddddddddddddddddddddh.
+      :dddddddddddddddddddddddddd:
+     /dddddddddddddddddddddddddddd/
+    +dddddddddddddddddddddddddddddd+
+   sdddddddddddddddddddddddddddddddds
+  ydddddddddddd++hdddddddddddddddddddy
+.hddddddddddd+    +ddddh:-sdddddddddddh.
+hdddddddddd+        +y:    .sddddddddddh
+ddddddddh+     //     .      -sddddddddd
+ddddddh+     /hddh/     :s-    -sddddddd
+ddddh+     /+/dddddh/     +s-    -sddddd
+ddd+     /o  :dddddddh/     oy-    .yddd
+hdddyo+ohddyosdddddddddho+oydddy++ohdddh
+.hddddddddddddddddddddddddddddddddddddh.
+  yddddddddddddddddddddddddddddddddddy
+   sdddddddddddddddddddddddddddddddds
+    +dddddddddddddddddddddddddddddd+
+     /dddddddddddddddddddddddddddd/
+      :dddddddddddddddddddddddddd:
+       .hddddddddddddddddddddddh."
+
+echo -e "\e[0;1m
+  ____  _      ____  ____  ____     ___
+ /    T| T    |    \l    j|    \   /  _]
+Y  o  || |    |  o  )|  T |  _  Y /  [_
+|     || l___ |   _/ |  | |  |  |Y    _]
+|  _  ||     T|  |   |  | |  |  ||   [_
+|  |  ||     ||  |   j  l |  |  ||     T
+l__j__jl_____jl__j  |____jl__j__jl_____j"
+
+echo
+echo -ne "${c1}Are you want to continue installing (Y/N)? "
+read input
+if [[ $input = "Y" ]] || [[ $input = "y" ]]
+then connection="$(ping -c 1 -q www.google.com >&/dev/null; echo $?)"
+if [[ "$connection" != 0 ]]
+then
+echo -e "\033[1;91m          [\033[1;92m-\033[1;91m] No Internet\033[1;92m connection!"
+echo
+   exit
+fi
+sleep 1.5
+cd $HOME
+mkdir alpine > /dev/null 2>&1
+cd alpine
+echo
+echo -e '\033[1m\033[38;2;0;80;255m[^_^] Alpine Installing Starting...'
+sleep 1
+echo
+pkg update -y && pkg install wget curl proot tar -y && wget https://raw.githubusercontent.com/AndronixApp/AndronixOrigin/master/Installer/Alpine/alpinexfce.sh && chmod +x alpinexfce.sh && bash alpinexfce.sh
+else
+echo -e '\033[0m\033[1mAbort.'
+echo
+exit
+fi
+
+	elif [[ "${options[$choice]}" = *"5"* ]];then
+c1='\e[0;1;96m'
+c2='\e[0;1;38;2;0;180;180m'
+
+echo -e "\n\n${c1}                   y:
+                  sMN-
+                 +MMMm'
+                /MMMMMd'
+               :NMMMMMMy
+              -NMMMMMMMMs
+             .NMMMMMMMMMM+
+            ${c2}.mMMMMMMMMMMMM+
+            oNMMMMMMMMMMMMM+
+          '+'-+NMMMMMMMMMMMM+
+          .sNMNhNMMMMMMMMMMMM/${c1}
+        'hho/sNMMMMMMMMMMMMMMM/
+       '.'omMMmMMMMMMMMMMMMMMMM+
+      .mMNdshMMMMd+::oNMMMMMMMMMo
+     .mMMMMMMMMM+     'yMMMMMMMMMs
+    .NMMMMMMMMM/        yMMMMMMMMMy
+   -NMMMMMMMMMh         'mNMMMMMMMMd'
+  /NMMMNds+:.'             '-/oymMMMm.
+ +Mmy/.                          ':smN:
+/+.                                  -o."
+
+echo -e '\e[0;1m
+       e                     888
+      d8b     888-~\  e88~~\ 888-~88e
+     /Y88b    888    d888    888  888
+    /  Y88b   888    8888    888  888
+   /____Y88b  888    Y888    888  888
+  /      Y88b 888     "88__/ 888  888'
+
+
+echo
+echo -ne "\n${c1}Are you want to continue installing (Y/N)? "
+read input
+if [[ $input = "Y" ]] || [[ $input = "y" ]]
+then connection="$(ping -c 1 -q www.google.com >&/dev/null; echo $?)"
+if [[ "$connection" != 0 ]]
+then
+echo -e "\033[1;91m          [\033[1;92m-\033[1;91m] No Internet\033[1;92m connection!"
+echo
+   exit
+fi
+sleep 1.5
+cd $HOME
+mkdir arch > /dev/null 2>&1
+cd arch
+echo
+echo -e '\033[1m\033[38;2;0;80;255m[^_^] Arch Installing Starting...'
+sleep 1
+echo
+pkg update -y && pkg install wget curl proot tar -y && wget https://raw.githubusercontent.com/AndronixApp/AndronixOrigin/master/Installer/Arch/armhf/arch-xfce.sh && chmod +x arch-xfce.sh &&bash arch-xfce.sh
+else
+echo -e '\033[0m\033[1mAbort.'
+echo
+exit
+fi
+
+	elif [[ "${options[$choice]}" = *"6"* ]];then
+c1='\e[0;1;38;2;0;200;130m'
+c2='\e[0;1;77m'
+
+echo -e "${c1}                __.;=====;.__
+            _.=+==++=++=+=+===;.
+             -=+++=+===+=+=+++++=_
+        .     -=:        --==+=++==.
+       _vi,                 --+=++++:
+      .uvnvi.       _._       -==+==+.
+     .vvnvnI     .;==|==;.     :|=||=|.
+${c2}+QmQQm${c1}pvvnv; ${c2}_yYsyQQWUUQQQm mQmQM${c1}:${c2}QQQWUV@QQm.
+${c2} -QQWQW${c1}pvvo${c2}wZ?.wQQQE${c1}==<${c2}QWWQ/QWQW.QQWW${c1}(: ${c2}jQWQE
+${c2}  -@QQQQmmU   jQQQ@${c1}+=<${c2}QWQQ)mQQQ.mQQQC${c1}+;${c2}jWQQ@'
+${c2}   -@WQ8Y${c1}nI:   ${c2}QWQQwgQQWV${c1} ${c2}mWQQ.jQWQQgyyWW@!
+${c1}     -1vvnvv.      ~+++         ++|+++
+      +vnvnnv,                  -|===
+       +vnvnvns.           .      :=-
+        -Invnvvnsi..___..=sv=.     
+          +Invnvnvnnnnnnnnvvnn;.
+            ~|Invnvnvvnvvvnnv}+
+               -~|{*l}*|~"
+
+echo
+echo -n "Are you want to continue installing (Y/N)? "
+read input
+if [[ $input = "Y" ]] || [[ $input = "y" ]]
+then connection="$(ping -c 1 -q www.google.com >&/dev/null; echo $?)"
+if [[ "$connection" != 0 ]]
+then
+echo -e "\033[1;91m          [\033[1;92m-\033[1;91m] No Internet\033[1;92m connection!"
+echo
+   exit
+fi
+sleep 1.5
+cd $HOME
+mkdir void > /dev/null 2>&1
+cd void
+echo
+echo -e '\033[1m\033[38;2;0;80;255m[^_^] Void Installing Starting...'
+sleep 1
+echo
+pkg update -y && pkg install wget curl proot tar -y && wget https://raw.githubusercontent.com/AndronixApp/AndronixOrigin/master/Installer/Void/void-xfce.sh && chmod +x void-xfce.sh && bash void-xfce.sh
+else
+echo -e '\033[0m\033[1mAbort.'
+echo
+exit
+fi
+
+	elif [[ "${options[$choice]}" = *"7"* ]];then
+c1='\e[0;1;94m'
+c2='\e[0;1;77m'
+c3='\e[0;1;38;2;0;100;255m'
+
+echo -e "\n\n    ${c1}          /:-------------:\\
+           :-------------------::
+         :-----------${c2}/shhOHbmp${c1}---:\\
+       /-----------${c2}omMMMNNNMMD  ${c1}---:
+      :-----------${c2}sMMMMNMNMP${c1}.    ---:
+     :-----------${c2}:MMMdP${c1}-------    ---\\
+    ,------------${c2}:MMMd${c1}--------    ---:
+    :------------${c2}:MMMd${c1}-------    .---:
+    :----    ${c2}oNMMMMMMMMMNho${c1}     .----:
+    :--     .${c2}+shhhMMMmhhy++${c1}   .------/
+    :-    -------${c2}:MMMd${c1}--------------:
+    :-   --------${c2}/MMMd${c1}-------------;
+    :-    ------${c2}/hMMMy${c1}------------:
+    :--${c2} :dMNdhhdNMMNo${c1}------------;
+    :---${c2}:sdNMMMMNds:${c1}------------:
+    :------${c2}:://:${c1}-------------::
+    :---------------------://"
+
+echo -e "${c3}
+    ,d8888b          d8b
+   88P'             88P
+d888888P           d88
+  ?88'  d8888b d888888   d8888b   88bd88b d888b8b
+  88P  d8b_,dPd8P  ?88  d8P  ?88  88P    d8P  ?88
+ d88   88b    88b  ,88b 88b  d88 d88     88b  ,88b
+d88     ?888P' ?88P''88b'?8888P d88       ?88P''88b${c2}"
+
+echo
+echo -n "Are you want to continue installing (Y/N)? "
+read input
+if [[ $input = "Y" ]] || [[ $input = "y" ]]
+then connection="$(ping -c 1 -q www.google.com >&/dev/null; echo $?)"
+if [[ "$connection" != 0 ]]
+then
+echo -e "\033[1;91m          [\033[1;92m-\033[1;91m] No Internet\033[1;92m connection!"
+echo
+   exit
+fi
+sleep 1.5
+cd $HOME
+mkdir fedora > /dev/null 2>&1
+cd fedora
+echo
+echo -e '\033[1m\033[38;2;0;80;255m[^_^] Fedora Installing Starting...'
+sleep 1
+echo
+pkg update -y && pkg install wget curl proot tar -y && wget https://raw.githubusercontent.com/AndronixApp/AndronixOrigin/master/Installer/Fedora/fedora-xfce.sh && chmod +x fedora-xfce.sh && bash fedora-xfce.sh
+else
+echo -e '\033[0m\033[1mAbort.'
+echo
+exit
+fi
+
+	elif [[ "${options[$choice]}" = *"8"* ]];then
+c1='\e[0;1;92m'
+
+echo -e "\n\n   ${c1}██████████████████  ████████
+   ██████████████████  ████████
+   ██████████████████  ████████
+   ██████████████████  ████████
+   ████████            ████████
+   ████████  ████████  ████████
+   ████████  ████████  ████████
+   ████████  ████████  ████████
+   ████████  ████████  ████████
+   ████████  ████████  ████████
+   ████████  ████████  ████████
+   ████████  ████████  ████████
+   ████████  ████████  ████████
+   ████████  ████████  ████████"
+
+echo -e "\e[0;1m
+ █▀▄▀█ █▀▀█ █▀▀▄   ▀ █▀▀█ █▀▀█ █▀▀█
+ █ █ █ █▄▄█ █  █   █ █▄▄█ █▄▄▀ █  █
+ █   █ ▀  ▀ ▀  ▀ █▄█ ▀  ▀ ▀ ▀▀ ▀▀▀▀"
+
+echo
+echo
+echo -ne "${c1}Are you want to continue installing (Y/N)? "
+read input
+if [[ $input = "Y" ]] || [[ $input = "y" ]]
+then connection="$(ping -c 1 -q www.google.com >&/dev/null; echo $?)"
+if [[ "$connection" != 0 ]]
+then
+echo -e "\033[1;91m          [\033[1;92m-\033[1;91m] No Internet\033[1;92m connection!"
+echo
+   exit
+fi
+sleep 1.5
+cd $HOME
+mkdir manjaro > /dev/null 2>&1
+cd manjaro
+echo
+echo -e '\033[1m\033[38;2;0;80;255m[^_^] Manjaro Installing Starting...'
+sleep 1
+echo
+pkg update -y && pkg install wget curl proot tar -y && wget https://raw.githubusercontent.com/AndronixApp/AndronixOrigin/master/Installer/Manjaro/manjaro-xfce.sh && chmod +x manjaro-xfce.sh && bash manjaro-xfce.sh
+else
+echo -e '\033[0m\033[1mAbort.'
+echo
+exit
+fi
+
+	elif [[ "${options[$choice]}" = *"#"* ]];then
+exit
 fi
